@@ -1,500 +1,1159 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Báo cáo Phân tích IPO TCBS - One Page</title>
+    <title>Báo cáo Tương tác: Phân tích IPO TCBS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chosen Palette: Calm Harmony (Stone Gray, Deep Red, Complementary Blues/Greens) -->
+    <!-- Application Structure Plan: The SPA uses a thematic, single-page dashboard structure. Sections include a hero header, key advantages, an interactive financial analysis hub with tabbed charts, a visual diagram of the WealthTech model, market opportunity stats, and a balanced opportunities/risks view. This non-linear structure was chosen to allow users to quickly access and digest key investment themes (like financials or the tech model) without needing to follow the linear flow of the source report, enhancing usability and information synthesis. -->
+    <!-- Visualization & Content Choices: 1. Financial Growth: Goal=Change, Viz=Combined Bar/Line Chart (Chart.js), Interaction=Hover Tooltips. Justification=Clearly shows long-term growth. 2. Revenue Mix: Goal=Compare, Viz=Grouped Bar Chart (Chart.js), Interaction=Button Click Update. Justification=Directly visualizes strategic shift. 3. Peer Comparison: Goal=Compare, Viz=Grouped Bar Chart (Chart.js), Interaction=Button Click Update. Justification=Highlights efficiency leadership. 4. WealthTech Model: Goal=Organize, Viz=HTML/CSS Diagram, Interaction=Hover. Justification=Simplifies a complex concept without SVG. 5. Opps/Risks: Goal=Inform/Compare, Viz=Two-Column Text. Justification=Balanced view. Library: Chart.js (Canvas only). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
         }
-        .section-wrapper {
-            transition: all 0.3s ease-in-out;
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
         }
-        .section-wrapper:hover {
+        .kpi-card {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #E2E8F0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #DC2626;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-gray-800">
 
-    <header class="bg-white shadow-md p-4 sticky top-0 z-50">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center flex-wrap gap-4">
-            <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-indigo-600">
-                    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5A2 2 0 0 0 7.5 21c3.1 0 5.38-3.08 6.5-6 1.12-2.92 1.15-5.98 0-9 1.45 1.25 3 2.75 3 2.75 2.25 2.25 4.75-.25 7-2 1.25 1.25 2.5 4.75 2.5 4.75-1.5 5.5-7 10-7 10s-5.5-1.5-10-7Z"></path>
-                    <path d="m14.5 9.5-3-3L8 10l-3 3"></path>
-                    <path d="m13 13-1-1-3 3-1-1-3 3-1-1-3 3"></path>
-                </svg>
-                <h1 class="text-xl md:text-2xl font-bold text-indigo-600">Báo cáo IPO TCBS</h1>
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm border-b border-gray-200">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <span class="text-2xl font-bold text-red-700">TCBS</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link text-gray-600 font-medium px-3 py-2 rounded-md text-sm">Tổng Quan</a>
+                        <a href="#financials" class="nav-link text-gray-600 font-medium px-3 py-2 rounded-md text-sm">Phân Tích Tài Chính</a>
+                        <a href="#wealthtech" class="nav-link text-gray-600 font-medium px-3 py-2 rounded-md text-sm">Mô Hình WealthTech</a>
+                        <a href="#outlook" class="nav-link text-gray-600 font-medium px-3 py-2 rounded-md text-sm">Triển Vọng Đầu Tư</a>
+                    </div>
+                </div>
             </div>
-            <nav class="flex flex-wrap justify-center md:justify-end space-x-2 md:space-x-4 text-sm md:text-base">
-                <a href="#overview" class="px-3 py-2 rounded-lg transition-all duration-300 text-gray-600 hover:bg-gray-200">Tổng Quan</a>
-                <a href="#wealthtech" class="px-3 py-2 rounded-lg transition-all duration-300 text-gray-600 hover:bg-gray-200">Wealthtech</a>
-                <a href="#financial" class="px-3 py-2 rounded-lg transition-all duration-300 text-gray-600 hover:bg-gray-200">Tài Chính</a>
-                <a href="#advantages" class="px-3 py-2 rounded-lg transition-all duration-300 text-gray-600 hover:bg-gray-200">Lợi Thế</a>
-                <a href="#potential" class="px-3 py-2 rounded-lg transition-all duration-300 text-gray-600 hover:bg-gray-200">Tiềm Năng</a>
-            </nav>
-        </div>
+        </nav>
     </header>
 
-    <main class="container mx-auto p-4 md:p-8">
-        <!-- Tóm tắt Điều hành -->
-        <div id="summary" class="section-wrapper bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <div class="flex items-center mb-6">
-                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-                    </svg>
+    <main>
+        <section id="hero" class="bg-white pt-16 pb-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">Phân Tích IPO Công ty Chứng khoán Kỹ Thương (TCBS)</h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-500">Một góc nhìn tương tác về người tiên phong WealthTech tại Việt Nam.</p>
+                <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <p class="text-sm font-medium text-gray-500">Thời gian IPO</p>
+                        <p class="text-xl font-bold text-red-700">Q4/2025</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <p class="text-sm font-medium text-gray-500">Cổ phiếu chào bán</p>
+                        <p class="text-xl font-bold text-red-700">231.15 triệu</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <p class="text-sm font-medium text-gray-500">Tỷ lệ chào bán</p>
+                        <p class="text-xl font-bold text-red-700">10%</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <p class="text-sm font-medium text-gray-500">Sàn niêm yết</p>
+                        <p class="text-xl font-bold text-red-700">HOSE</p>
+                    </div>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-bold">Tóm tắt Điều hành</h2>
-            </div>
-            <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
-                <p>
-                    TCBS (Công ty Cổ phần Chứng khoán Kỹ thương), một công ty con của Techcombank, đang khẳng định vị thế là một trong những công ty chứng khoán hàng đầu tại Việt Nam, đặc biệt với vai trò tiên phong trong mô hình Wealthtech. Đợt chào bán cổ phiếu lần đầu ra công chúng (IPO) dự kiến diễn ra vào cuối năm 2025 hoặc đầu năm 2026.
-                </p>
-                <div class="bg-indigo-50 p-4 rounded-lg mt-4">
-                    <h4 class="font-semibold text-lg text-indigo-600 mb-2">Các điểm nhấn đầu tư chính:</h4>
-                    <ul class="list-disc list-inside space-y-2 pl-4">
-                        <li><strong>Tiên phong Wealthtech:</strong> TCBS đã xây dựng một hệ sinh thái đầu tư số hóa toàn diện.</li>
-                        <li><strong>Nền tảng công nghệ mạnh mẽ:</strong> Nền tảng TCInvest với tỷ lệ mở tài khoản trực tuyến gần 99%.</li>
-                        <li><strong>Hỗ trợ từ Techcombank:</strong> Hậu thuẫn từ ngân hàng mẹ với 88.7% sở hữu cung cấp nền tảng tài chính vững chắc.</li>
-                        <li><strong>Hiệu quả hoạt động vượt trội:</strong> Tỷ lệ chi phí trên thu nhập (CIR) thấp và lợi nhuận trên mỗi nhân viên cao.</li>
-                        <li><strong>Tiềm năng tăng trưởng:</strong> Thị trường Wealthtech tại Việt Nam đang ở giai đoạn sơ khai nhưng sở hữu tiềm năng phát triển to lớn.</li>
+                <div class="mt-10 p-6 bg-red-50 rounded-2xl max-w-4xl mx-auto text-left border border-red-200">
+                    <h3 class="text-xl font-bold text-red-800">Tổng quan về IPO của TCBS và Lộ trình</h3>
+                    <p class="mt-2 text-gray-700">Đợt IPO của TCBS được kỳ vọng sẽ là một trong những thương vụ đáng chú ý nhất trên thị trường tài chính Việt Nam. Công ty dự kiến huy động tổng cộng <strong>10.817,82 tỷ VND</strong> thông qua việc phát hành 231.15 triệu cổ phiếu, với giá chào bán <strong>46.800 VND/cổ phiếu</strong>.</p>
+                    <ul class="list-disc list-inside mt-4 text-gray-700">
+                        <li class="font-bold text-red-700">Kế hoạch sử dụng vốn:</li>
+                        <ul class="list-none list-inside ml-4 space-y-1">
+                            <li>- 70% vốn (7.572 tỷ VND): Dùng cho hoạt động tự doanh chứng khoán.</li>
+                            <li>- 30% còn lại (3.245 tỷ VND): Dùng cho hoạt động môi giới và cấp margin.</li>
+                        </ul>
+                        <li class="font-bold text-red-700 mt-4">Lộ trình IPO dự kiến:</li>
+                        <ul class="list-none list-inside ml-4 space-y-1">
+                            <li>- Mở đăng ký IPO trong tháng 09/2025.</li>
+                            <li>- Niêm yết & Giao dịch trong Quý 4/2025.</li>
+                        </ul>
                     </ul>
                 </div>
             </div>
-        </div>
-
-        <!-- Tổng quan về IPO của TCBS và Lộ trình -->
-        <div id="overview" class="section-wrapper bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <div class="flex items-center mb-6">
-                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5A2 2 0 0 0 7.5 21c3.1 0 5.38-3.08 6.5-6 1.12-2.92 1.15-5.98 0-9 1.45 1.25 3 2.75 3 2.75 2.25 2.25 4.75-.25 7-2 1.25 1.25 2.5 4.75 2.5 4.75-1.5 5.5-7 10-7 10s-5.5-1.5-10-7Z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl md:text-3xl font-bold">Tổng quan về IPO của TCBS và Lộ trình</h2>
-            </div>
-            <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
-                <p>
-                    Đợt IPO của TCBS được kỳ vọng sẽ là một trong những thương vụ đáng chú ý nhất trên thị trường tài chính Việt Nam. Công ty dự kiến huy động tổng cộng 10.817,82 tỷ VND thông qua việc phát hành 231.15 triệu cổ phiếu, với giá chào bán <strong>46.800 VND/cổ phiếu</strong>.
-                </p>
-                <div class="bg-indigo-50 p-4 rounded-lg mt-4">
-                    <h4 class="font-semibold text-lg text-indigo-600 mb-2">Kế hoạch sử dụng vốn:</h4>
-                    <ul class="list-disc list-inside space-y-2 pl-4">
-                        <li><strong>70% vốn (7.572 tỷ VND):</strong> Dùng cho hoạt động tự doanh chứng khoán.</li>
-                        <li><strong>30% còn lại (3.245 tỷ VND):</strong> Dùng cho hoạt động môi giới và cấp margin.</li>
-                    </ul>
-                </div>
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-6">Lộ trình IPO dự kiến</h3>
-                <ul class="list-disc list-inside space-y-2 pl-4">
-                    <li>Mở đăng ký IPO trong tháng 09/2025.</li>
-                    <li>Niêm yết & Giao dịch trong Quý 4/2025.</li>
-                </ul>
-            </div>
-        </div>
+        </section>
         
-        <!-- Mô hình Wealthtech và cơ hội tại Việt Nam -->
-        <div id="wealthtech" class="section-wrapper bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <div class="flex items-center mb-6">
-                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <path d="M12 12V2L4 9l8 3Z"></path>
-                        <path d="M12 12V22L4 15l8-3Z"></path>
-                        <path d="M12 12V2l8 7-8 3Z"></path>
-                        <path d="M12 12V22l8-7-8-3Z"></path>
-                    </svg>
+        <section id="overview" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900">Tại sao nên quan tâm đến IPO của TCBS?</h2>
+                    <p class="mt-2 text-lg text-gray-600">TCBS xây dựng lợi thế cạnh tranh bền vững dựa trên bốn trụ cột chính.</p>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-bold">Mô hình Wealthtech và cơ hội tại Việt Nam</h2>
-            </div>
-            <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
-                <p>
-                    Wealthtech kết hợp công nghệ và dịch vụ quản lý tài sản để cung cấp các giải pháp đầu tư tự động, cá nhân hóa. TCBS là một trong những công ty tiên phong áp dụng mô hình này tại Việt Nam.
-                </p>
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-6">Cơ hội phát triển Wealthtech tại Việt Nam</h3>
-                <ul class="list-disc list-inside space-y-2 pl-4">
-                    <li>
-                        <strong>Dân số trẻ và am hiểu công nghệ:</strong> Tỷ lệ dân số trẻ cao, với hơn 70% dân số sử dụng Internet.
-                    </li>
-                    <li>
-                        <strong>Tăng trưởng thu nhập:</strong> Tầng lớp trung lưu và giàu có đang tăng nhanh, nhu cầu quản lý tài sản chuyên nghiệp ngày càng lớn.
-                    </li>
-                    <li>
-                        <strong>Thị trường còn sơ khai:</strong> Các dịch vụ Wealthtech vẫn còn mới mẻ, mang lại cơ hội lớn cho các doanh nghiệp tiên phong.
-                    </li>
-                </ul>
-                <div class="bg-indigo-50 p-4 rounded-lg mt-4">
-                    <p class="font-semibold text-indigo-600 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                        Chiến lược của TCBS:
-                    </p>
-                    <p class="ml-6">
-                        TCBS tận dụng dữ liệu lớn và AI để phân tích hành vi người dùng, từ đó đưa ra các sản phẩm đầu tư phù hợp, tối ưu hóa trải nghiệm khách hàng và giảm chi phí.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bí quyết tăng trưởng - Mô hình khác biệt -->
-        <div id="growth-secret" class="section-wrapper bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <div class="flex items-center mb-6">
-                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
-                </div>
-                <h2 class="text-2xl md:text-3xl font-bold">Bí quyết tăng trưởng - Mô hình khác biệt</h2>
-            </div>
-            <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
-                <p>Xây dựng thành công mô hình kinh doanh wealthTech khác biệt dựa trên 3 trụ cột:</p>
-                <div class="grid md:grid-cols-3 gap-6 mt-6 text-center">
-                    <div class="flex flex-col items-center p-4 bg-gray-50 rounded-lg shadow-sm">
-                        <div class="p-3 bg-blue-100 rounded-full text-blue-600 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-                            </svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="kpi-card text-center">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mx-auto mb-4">
+                            <span class="text-2xl text-red-700">⚡</span>
                         </div>
-                        <h4 class="font-semibold text-lg text-blue-600">Sản phẩm khác biệt</h4>
-                        <ul class="list-disc list-inside text-sm text-gray-700 text-left mt-2 space-y-1">
-                            <li>Nền tảng Siêu thị đầu tư (Super Mall of Wealth) cung cấp các giải pháp tài chính toàn diện và tiên phong.</li>
-                            <li>Xây dựng các dịch vụ và sản phẩm đa dạng đáp ứng mọi phân khúc khách hàng.</li>
-                        </ul>
+                        <h3 class="font-semibold text-gray-900 text-center">Tiên phong WealthTech</h3>
+                        <p class="mt-1 text-gray-600">Dẫn đầu xu hướng số hóa đầu tư, giảm phụ thuộc vào môi giới truyền thống.</p>
                     </div>
-                    <div class="flex flex-col items-center p-4 bg-gray-50 rounded-lg shadow-sm">
-                        <div class="p-3 bg-green-100 rounded-full text-green-600 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                                <path d="M21 2c.5 0 1 .5 1 1v2c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1V3c0-.5.5-1 1-1zm0 4v14c0 .5-.5 1-1 1H4c-.5 0-1-.5-1-1V6"></path>
-                                <path d="M22 6c-2.5-1.5-5-2-8-2-4 0-8 2.5-8 5v1"></path>
-                            </svg>
+                    <div class="kpi-card text-center">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mx-auto mb-4">
+                            <span class="text-2xl text-blue-700">📈</span>
                         </div>
-                        <h4 class="font-semibold text-lg text-green-600">Mô hình tiếp cận Phygital</h4>
-                        <ul class="list-disc list-inside text-sm text-gray-700 text-left mt-2 space-y-1">
-                            <li>Tận dụng hệ sinh thái Techcombank: RM, đại lý bảo hiểm, môi giới BDS giới thiệu khách hàng.</li>
-                            <li>Hệ thống giao dịch 100% online qua ứng dụng TCInvest.</li>
-                        </ul>
+                        <h3 class="font-semibold text-gray-900 text-center">Hiệu Quả Vượt Trội</h3>
+                        <p class="mt-1 text-gray-600">CIR thấp nhất ngành, ROE & ROA cao, minh chứng cho mô hình kinh doanh hiệu quả.</p>
                     </div>
-                    <div class="flex flex-col items-center p-4 bg-gray-50 rounded-lg shadow-sm">
-                        <div class="p-3 bg-red-100 rounded-full text-red-600 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                                <path d="M12 2v20"></path>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
+                    <div class="kpi-card text-center">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mx-auto mb-4">
+                             <span class="text-2xl text-green-700">🏆</span>
                         </div>
-                        <h4 class="font-semibold text-lg text-red-600">Nền tảng vượt trội</h4>
-                        <ul class="list-disc list-inside text-sm text-gray-700 text-left mt-2 space-y-1">
-                            <li>Sở hữu và làm chủ dữ liệu và trí tuệ nhân tạo AI.</li>
-                            <li>Sở hữu hàng trăm nhân sự là Chuyên gia công nghệ tài chính (Wealth Technologist).</li>
-                            <li>Sở hữu và làm chủ công nghệ và nền tảng cốt lõi.</li>
-                        </ul>
+                        <h3 class="font-semibold text-gray-900 text-center">Dẫn Đầu Thị Phần</h3>
+                        <p class="mt-1 text-gray-600">Vị thế số 1 trong các mảng chiến lược như tư vấn trái phiếu và cho vay ký quỹ.</p>
+                    </div>
+                    <div class="kpi-card text-center">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mx-auto mb-4">
+                            <span class="text-2xl text-yellow-700">🏦</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 text-center">Hệ Sinh Thái Vững Mạnh</h3>
+                        <p class="mt-1 text-gray-600">Tận dụng lợi thế từ ngân hàng mẹ Techcombank để tiếp cận khách hàng hiệu quả.</p>
+                        </div>
+                    </div>
+                <div class="mt-12 p-6 bg-gray-100 rounded-2xl border border-gray-200 text-left">
+                    <h3 class="text-xl font-bold text-gray-900">Các điểm nhấn đầu tư chính</h3>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-red-600 font-bold">🎯</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Tiên phong Wealthtech</h4>
+                            <p class="text-sm text-gray-600 text-center">TCBS đã xây dựng một hệ sinh thái đầu tư số hóa toàn diện.</p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-blue-600 font-bold">💻</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Nền tảng công nghệ mạnh mẽ</h4>
+                            <p class="text-sm text-gray-600 text-center">Nền tảng TCInvest với tỷ lệ mở tài khoản trực tuyến gần 99%.</p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-green-600 font-bold">🤝</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Hậu thuẫn từ Techcombank</h4>
+                            <p class="text-sm text-gray-600 text-center">Hậu thuẫn từ ngân hàng mẹ với 88.7% sở hữu cung cấp nền tảng tài chính vững chắc.</p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-red-600 font-bold">📊</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Hiệu quả hoạt động vượt trội</h4>
+                            <p class="text-sm text-gray-600 text-center">Tỷ lệ chi phí trên thu nhập (CIR) thấp và lợi nhuận trên mỗi nhân viên cao.</p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-blue-600 font-bold">🚀</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Tiềm năng tăng trưởng</h4>
+                            <p class="text-sm text-gray-600 text-center">Thị trường Wealthtech tại Việt Nam đang ở giai đoạn sơ khai nhưng sở hữu tiềm năng phát triển to lớn.</p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-green-600 font-bold">💎</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Xây dựng mảng tài sản số</h4>
+                            <p class="text-sm text-gray-600 text-center">Tiên phong nghiên cứu và xây dựng nền tảng giao dịch tài sản số trong tương lai.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-12 p-6 bg-red-50 rounded-2xl border border-red-200 text-left">
+                    <h3 class="text-xl font-bold text-red-800">Bí quyết tăng trưởng - Mô hình khác biệt</h3>
+                    <p class="mt-2 text-gray-700">TCBS xây dựng thành công mô hình kinh doanh WealthTech khác biệt dựa trên 3 trụ cột:</p>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-blue-600 font-bold">📱</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Sản phẩm khác biệt</h4>
+                            <ul class="list-none text-sm text-gray-600 mt-2 space-y-1">
+                                <li>- Nền tảng "siêu thị đầu tư" cung cấp các giải pháp tài chính toàn diện.</li>
+                                <li>- Đa dạng sản phẩm đáp ứng mọi phân khúc khách hàng.</li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-green-600 font-bold">🌐</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Mô hình tiếp cận Phygital</h4>
+                            <ul class="list-none text-sm text-gray-600 mt-2 space-y-1">
+                                <li>- Tận dụng hệ sinh thái Techcombank và các đối tác.</li>
+                                <li>- Hệ thống giao dịch 100% online qua ứng dụng TCInvest.</li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow space-y-2">
+                            <span class="text-2xl text-red-600 font-bold">⚙️</span>
+                            <h4 class="font-semibold text-gray-900 text-center">Nền tảng vượt trội</h4>
+                            <ul class="list-none text-sm text-gray-600 mt-2 space-y-1">
+                                <li>- Làm chủ dữ liệu và AI.</li>
+                                <li>- Sở hữu đội ngũ chuyên gia công nghệ tài chính.</li>
+                                <li>- Làm chủ công nghệ và nền tảng cốt lõi.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Báo cáo phân tích tài chính của TCBS -->
-        <div id="financial" class="section-wrapper bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <div class="flex items-center mb-6">
-                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <rect x="3" y="6" width="18" height="13" rx="2"></rect>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a4 4 0 0 0-4 4"></path>
-                        <path d="M12 22a4 4 0 0 1-4-4"></path>
-                        <path d="M12 2a4 4 0 0 1 4 4"></path>
-                        <path d="M12 22a4 4 0 0 0 4-4"></path>
-                    </svg>
+        <section id="financials" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900">Sức Khỏe Tài Chính</h2>
+                    <p class="mt-2 text-lg text-gray-600">Tương tác với các biểu đồ để khám phá hiệu quả hoạt động của TCBS.</p>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-bold">Báo cáo phân tích tài chính của TCBS</h2>
-            </div>
-            <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
-                <p>
-                    TCBS liên tục ghi nhận kết quả kinh doanh tăng trưởng ấn tượng, khẳng định vị thế dẫn đầu trong ngành chứng khoán về hiệu quả hoạt động.
-                </p>
-                <div class="w-full h-80 bg-gray-50 rounded-lg p-2">
-                    <img src="https://placehold.co/800x320/E0E7FF/4338CA?text=Biểu+đồ+Doanh+thu+và+Lợi+nhuận+TCBS" alt="Biểu đồ Doanh thu và Lợi nhuận TCBS" class="w-full h-full object-contain">
+                <div class="flex justify-center mb-8 space-x-2 bg-gray-100 p-2 rounded-full">
+                    <button id="btn-growth" class="chart-btn bg-red-700 text-white px-4 py-2 rounded-full font-medium">Tăng trưởng</button>
+                    <button id="btn-mix" class="chart-btn bg-transparent text-gray-600 px-4 py-2 rounded-full font-medium">Cơ cấu Doanh thu</button>
+                    <button id="btn-peers" class="chart-btn bg-transparent text-gray-600 px-4 py-2 rounded-full font-medium">So sánh Đối thủ</button>
                 </div>
-
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-8">Các Chỉ số Hiệu quả Tài chính Chính</h3>
-                <p class="mt-2">Bảng dưới đây tổng hợp một số chỉ số tài chính của TCBS, dựa trên các dữ liệu có sẵn.</p>
-                <div class="overflow-x-auto rounded-lg shadow-md mt-4">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Năm/Quý</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doanh thu (tỷ VNĐ)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lợi nhuận trước thuế (tỷ VNĐ)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROE (%)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Biên lợi nhuận trước thuế (%)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CIR (%)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2020</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3.313</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2.692</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">40%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">81.2%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">14.1%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2021</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5.205</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3.810</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">40%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">73.2%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">17.5%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2022</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5.257</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3.058</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">29.4%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">58.2%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">25.5%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2023</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5.276</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3.028</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">13%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">57.4%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">19.3%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2024</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">7.615</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4.802</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">63.1%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">14.2%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Q1/2025</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2.028</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1.310</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">64.6%</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">12.2%</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="chart-container">
+                    <canvas id="financialChart"></canvas>
                 </div>
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-8">Thuyết minh Các chỉ số</h3>
-                <p class="mt-2">
-                    <strong>ROE (Return on Equity - Tỷ suất sinh lời trên vốn chủ sở hữu):</strong> ROE là chỉ số đo lường mức độ hiệu quả sử dụng vốn của cổ đông để tạo ra lợi nhuận. Chỉ số ROE cao cho thấy công ty đang sử dụng vốn chủ sở hữu một cách hiệu quả để tạo ra lợi nhuận ròng.
-                </p>
-                <p class="mt-2">
-                    <strong>CIR (Cost-to-Income Ratio - Tỷ lệ chi phí trên thu nhập):</strong> CIR là chỉ số đánh giá khả năng kiểm soát chi phí của một công ty. Chỉ số CIR thấp cho thấy công ty đang hoạt động hiệu quả, với chi phí được kiểm soát tốt so với doanh thu.
-                </p>
-                <p class="mt-2">
-                    <strong>Biên lợi nhuận trước thuế:</strong> Là tỷ lệ phần trăm giữa lợi nhuận trước thuế và doanh thu. Chỉ số này cho biết cứ 100 đồng doanh thu, công ty tạo ra bao nhiêu đồng lợi nhuận trước thuế. Biên lợi nhuận cao cho thấy công ty có khả năng quản lý chi phí tốt và hoạt động kinh doanh hiệu quả.
-                </p>
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-8">Phân tích So sánh Hiệu quả Tài chính Ngành Chứng khoán Q1/2025</h3>
-                <div class="mt-6 bg-gray-50 rounded-lg p-4">
-                    <h4 class="font-semibold text-lg text-center text-gray-700 mb-4">Đồ thị 31: Doanh thu theo lĩnh vực kinh doanh của 10 CTCK có tổng tài sản lớn nhất Q1/2025 (tỷ đồng)</h4>
-                    <img src="https://placehold.co/800x320/F0F4F8/4A5568?text=Biểu+đồ+Doanh+thu+theo+lĩnh+vực" alt="Biểu đồ Doanh thu theo lĩnh vực" class="w-full h-full object-contain">
-                </div>
-                <div class="mt-6 bg-gray-50 rounded-lg p-4">
-                    <h4 class="font-semibold text-lg text-center text-gray-700 mb-4">Đồ thị 32: Lợi nhuận trước thuế và biên lợi nhuận trước thuế của 10 CTCK có tổng tài sản lớn nhất Q1/2025</h4>
-                    <img src="https://placehold.co/800x320/E0F2FE/0C4A6E?text=Biểu+đồ+Lợi+nhuận+và+biên+LNTT" alt="Biểu đồ Lợi nhuận và biên LNTT" class="w-full h-full object-contain">
-                </div>
-                <div class="mt-6 bg-gray-50 rounded-lg p-4">
-                    <h4 class="font-semibold text-lg text-center text-gray-700 mb-4">Đồ thị 33: ROA & ROE của 10 CTCK có tổng tài sản lớn nhất Q1/2025</h4>
-                    <img src="https://placehold.co/800x320/F0FDF4/14532D?text=Biểu+đồ+ROA+và+ROE" alt="Biểu đồ ROA và ROE" class="w-full h-full object-contain">
-                </div>
-            </div>
-        </div>
-
-        <!-- Lợi thế của TCBS và so sánh với đối thủ -->
-        <div id="advantages" class="section-wrapper bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <div class="flex items-center mb-6">
-                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl md:text-3xl font-bold">Lợi thế của TCBS và so sánh với đối thủ</h2>
-            </div>
-            <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
-                <p>
-                    TCBS đã xây dựng những lợi thế cạnh tranh độc đáo, giúp công ty nổi bật trong ngành chứng khoán Việt Nam, đặc biệt là so với các đối thủ như SSI, VNDirect, HSC.
-                </p>
-
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-6">Thị phần môi giới (Q2/2025)</h3>
-                <div class="w-full h-80 bg-gray-50 rounded-lg p-2">
-                    <img src="https://placehold.co/800x320/F5F5F5/4B5563?text=Biểu+đồ+Thị+phần+môi+giới" alt="Biểu đồ Thị phần môi giới" class="w-full h-full object-contain">
-                </div>
-
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-8">Thị phần dư nợ cho vay ký quỹ (Margin) Q2/2025</h3>
-                <p class="mt-2">Dữ liệu cho thấy SSI và TCBS đang dẫn đầu về dư nợ margin, bỏ xa các đối thủ còn lại, phản ánh tiềm lực tài chính mạnh mẽ. Tổng dư nợ margin toàn thị trường đạt hơn 304 nghìn tỷ VNĐ trong Q2/2025.</p>
-                <div class="w-full h-80 bg-gray-50 rounded-lg p-2 mt-4">
-                    <img src="https://placehold.co/800x320/E0F2FE/0C4A6E?text=Biểu+đồ+Dư+nợ+margin" alt="Biểu đồ Dư nợ margin" class="w-full h-full object-contain">
-                </div>
-
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-8">Thị phần tư vấn phát hành TPDN 2024</h3>
-                <p class="mt-2">
-                    Biểu đồ dưới đây cho thấy thị phần tư vấn phát hành trái phiếu doanh nghiệp (TPDN) năm 2024 (không tính nhóm Ngân hàng). TCBS nổi bật với thị phần vượt trội so với các đối thủ. Tổng giá trị phát hành trong năm 2024 là 159 nghìn tỷ đồng.
-                </p>
-                <div class="w-full h-80 bg-gray-50 rounded-lg p-2 mt-4">
-                    <img src="https://placehold.co/800x320/F0FDF4/14532D?text=Biểu+đồ+Thị+phần+TPDN" alt="Biểu đồ Thị phần TPDN" class="w-full h-full object-contain">
-                </div>
-
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-8">So sánh Đặc điểm Chính</h3>
-                <div class="overflow-x-auto rounded-lg shadow-md mt-4">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Đặc điểm</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TCBS</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SSI</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VNDirect</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HSC</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Mô hình kinh doanh trọng tâm</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Wealthtech toàn diện, số hóa đầu tư cá nhân</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Cân bằng giữa bán lẻ & tổ chức, mạnh margin & tự doanh</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Dịch vụ lấy khách hàng làm trung tâm, đầu tư công nghệ</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Môi giới & ngân hàng đầu tư, mạnh phái sinh</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Lợi thế công nghệ</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Nền tảng độc quyền TCInvest, 99% tài khoản online</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Nâng cấp hệ thống, SSI iBoard Pro</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Đầu tư AI & hạ tầng, DAccount, D-Community</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">HSC ONE, dữ liệu thời gian thực, giao dịch đa tài sản</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Hỗ trợ từ công ty mẹ</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Techcombank (88.7% sở hữu), tài chính mạnh, mạng lưới khách hàng, mô hình "phygital"</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Không có hỗ trợ ngân hàng mẹ trực tiếp như TCBS</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Không có hỗ trợ ngân hàng mẹ trực tiếp như TCBS</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Không có hỗ trợ ngân hàng mẹ trực tiếp như TCBS</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Hiệu quả hoạt động</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">CIR thấp, ROE cao, lợi nhuận/nhân viên vượt trội</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">ROE 10.1% (2023), cải thiện</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Lợi nhuận Q1/2025 giảm YoY, thách thức về thị phần</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Thiếu thông tin chi tiết so sánh</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Đa dạng hóa doanh thu</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Đa dạng hóa tốt (dịch vụ chứng khoán, ngân hàng đầu tư, kho bạc)</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Phụ thuộc vào tự doanh và margin lending</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Thiếu thông tin chi tiết so sánh</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">Thiếu thông tin chi tiết so sánh</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Đánh giá về Tiềm năng của Thương vụ này và Khuyến nghị Đầu tư năm 2025 -->
-        <div id="potential" class="section-wrapper bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
-            <div class="flex items-center mb-6">
-                <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
-                </div>
-                <h2 class="text-2xl md:text-3xl font-bold">Đánh giá tiềm năng đầu tư vào TCBS (2025)</h2>
-            </div>
-            <div class="space-y-4 text-gray-700 leading-relaxed text-sm md:text-base">
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600">Tại sao nên đầu tư?</h3>
-                <ul class="list-disc list-inside space-y-2 pl-4">
-                    <li>
-                        <strong>Bối cảnh kinh tế vĩ mô thuận lợi:</strong> Việt Nam dự kiến tăng trưởng GDP mạnh mẽ, thị trường chứng khoán được kỳ vọng nâng hạng và hệ thống KRX đi vào hoạt động.
-                    </li>
-                    <li>
-                        <strong>Vị thế dẫn đầu Wealthtech:</strong> TCBS có lợi thế người đi đầu và nền tảng công nghệ độc quyền, giúp công ty duy trì chu kỳ đổi mới.
-                    </li>
-                    <li>
-                        <strong>Hiệu quả tài chính vượt trội:</strong> Các chỉ số hiệu quả hoạt động cao và khả năng kiểm soát chi phí tốt.
-                    </li>
-                </ul>
-
-                <h3 class="font-semibold text-lg md:text-xl text-indigo-600 mt-6">Cơ hội và Rủi ro</h3>
-                <div class="grid md:grid-cols-2 gap-6 mt-4">
-                    <div class="bg-emerald-50 p-4 rounded-lg shadow-sm">
-                        <h4 class="flex items-center font-bold text-emerald-700 text-lg mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-8.62"></path>
-                                <path d="M22 4 12 14.01l-3-3"></path>
-                            </svg>
-                            Cơ hội
-                        </h4>
-                        <ul class="list-disc list-inside space-y-2 text-gray-700">
-                            <li>Tăng trưởng thị trường chứng khoán Việt Nam.</li>
-                            <li>Phát triển Wealthtech, gia tăng tầng lớp trung lưu.</li>
-                            <li>Sự hỗ trợ và tệp khách hàng từ Techcombank.</li>
-                        </ul>
+                <p id="chart-description" class="text-center mt-4 text-gray-500 italic"></p>
+                <div class="mt-12 p-6 bg-gray-100 rounded-2xl border border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Các chỉ số Hiệu quả Tài chính Chính</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center whitespace-nowrap">
+                            <thead>
+                                <tr class="border-b border-gray-300">
+                                    <th class="p-3 text-sm font-semibold text-gray-700">Năm/Quý</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">Doanh thu (Tỷ VND)</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">Lợi nhuận trước thuế (Tỷ VND)</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">ROE (%)</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">Biên lợi nhuận trước thuế (%)</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">CIR (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 border-b border-gray-200">2020</td>
+                                    <td class="p-3 border-b border-gray-200">3.313</td>
+                                    <td class="p-3 border-b border-gray-200">2.692</td>
+                                    <td class="p-3 border-b border-gray-200">40%</td>
+                                    <td class="p-3 border-b border-gray-200">81.2%</td>
+                                    <td class="p-3 border-b border-gray-200">14.1%</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 border-b border-gray-200">2021</td>
+                                    <td class="p-3 border-b border-gray-200">5.205</td>
+                                    <td class="p-3 border-b border-gray-200">3.810</td>
+                                    <td class="p-3 border-b border-gray-200">40%</td>
+                                    <td class="p-3 border-b border-gray-200">73.2%</td>
+                                    <td class="p-3 border-b border-gray-200">17.5%</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 border-b border-gray-200">2022</td>
+                                    <td class="p-3 border-b border-gray-200">5.257</td>
+                                    <td class="p-3 border-b border-gray-200">3.058</td>
+                                    <td class="p-3 border-b border-gray-200">29.4%</td>
+                                    <td class="p-3 border-b border-gray-200">58.2%</td>
+                                    <td class="p-3 border-b border-gray-200">25.5%</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 border-b border-gray-200">2023</td>
+                                    <td class="p-3 border-b border-gray-200">5.276</td>
+                                    <td class="p-3 border-b border-gray-200">3.028</td>
+                                    <td class="p-3 border-b border-gray-200">13%</td>
+                                    <td class="p-3 border-b border-gray-200">57.4%</td>
+                                    <td class="p-3 border-b border-gray-200">19.3%</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 border-b border-gray-200">2024</td>
+                                    <td class="p-3 border-b border-gray-200">7.615</td>
+                                    <td class="p-3 border-b border-gray-200">4.802</td>
+                                    <td class="p-3 border-b border-gray-200">15%</td>
+                                    <td class="p-3 border-b border-gray-200">63.1%</td>
+                                    <td class="p-3 border-b border-gray-200">14.2%</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3">Q1/2025</td>
+                                    <td class="p-3">2.028</td>
+                                    <td class="p-3">1.310</td>
+                                    <td class="p-3">15%</td>
+                                    <td class="p-3">64.6%</td>
+                                    <td class="p-3">12.2%</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="bg-red-50 p-4 rounded-lg shadow-sm">
-                        <h4 class="flex items-center font-bold text-red-700 text-lg mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="15" y1="9" x2="9" y2="15"></line>
-                                <line x1="9" y1="9" x2="15" y2="15"></line>
-                            </svg>
-                            Rủi ro
-                        </h4>
-                        <ul class="list-disc list-inside space-y-2 text-gray-700">
-                            <li>Biến động thị trường chung và rủi ro vĩ mô.</li>
-                            <li>Cạnh tranh gay gắt từ các đối thủ truyền thống.</li>
-                            <li>Rủi ro liên quan đến việc định giá IPO.</li>
-                        </ul>
+                </div>
+                <div class="mt-6 p-6 bg-gray-100 rounded-2xl border border-gray-200 text-left">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Thuyết minh Các chỉ số</h3>
+                    <ul class="list-none text-gray-700 space-y-3">
+                        <li>
+                            <p><span class="font-bold text-red-700">ROE (Return on Equity)</span> - Tỷ suất sinh lời trên vốn chủ sở hữu: ROE là chỉ số đo lường mức độ hiệu quả sử dụng vốn của cổ đông để tạo ra lợi nhuận. Chỉ số ROE cao cho thấy công ty đang sử dụng vốn chủ sở hữu một cách hiệu quả để tạo ra lợi nhuận ròng.</p>
+                        </li>
+                        <li>
+                            <p><span class="font-bold text-red-700">CIR (Cost-to-Income Ratio)</span> - Tỷ lệ chi phí trên thu nhập: CIR là chỉ số đánh giá khả năng kiểm soát chi phí của một công ty. Chỉ số CIR thấp cho thấy công ty đang hoạt động hiệu quả, với chi phí được kiểm soát tốt so với doanh thu.</p>
+                        </li>
+                        <li>
+                            <p><span class="font-bold text-red-700">Biên lợi nhuận trước thuế</span>: Là tỷ lệ phần trăm giữa lợi nhuận trước thuế và doanh thu. Chỉ số này cho biết cứ 100 đồng doanh thu, công ty tạo ra bao nhiêu đồng lợi nhuận trước thuế. Biên lợi nhuận cao cho thấy công ty có khả năng quản lý chi phí tốt và hoạt động kinh doanh hiệu quả.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="mt-12 p-6 bg-gray-100 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Phân tích Doanh thu theo lĩnh vực kinh doanh của 10 CTCK có tổng tài sản lớn nhất Q1/2025 (tỷ đồng)</h3>
+                    <div class="chart-container h-[50vh] max-h-[600px] w-full mx-auto">
+                        <canvas id="revenueMixChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-gray-500 italic">Đồ thị này cho thấy TCBS đã đa dạng hóa doanh thu, không phụ thuộc vào một mảng kinh doanh cốt lõi duy nhất.</p>
+                </div>
+                <div class="mt-12 p-6 bg-gray-100 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Lợi nhuận trước thuế và biên lợi nhuận trước thuế của 10 CTCK có tổng tài sản lớn nhất Q1/2025</h3>
+                    <div class="chart-container h-[50vh] max-h-[600px] w-full mx-auto">
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-gray-500 italic">TCBS dẫn đầu về cả lợi nhuận tuyệt đối và biên lợi nhuận, thể hiện hiệu quả sinh lời vượt trội so với các đối thủ.</p>
+                </div>
+                <div class="mt-12 p-6 bg-gray-100 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">ROA & ROE của 10 CTCK có tổng tài sản lớn nhất Q1/2025</h3>
+                    <div class="chart-container h-[50vh] max-h-[600px] w-full mx-auto">
+                        <canvas id="roaRoeChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-gray-500 italic">Kích thước bong bóng thể hiện độ lớn của tổng tài sản.</p>
+                </div>
+                <div class="mt-12 p-6 bg-gray-100 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Thị phần Môi giới chứng khoán Quý 2/2025</h3>
+                    <div class="chart-container h-[50vh] max-h-[600px] w-full mx-auto">
+                        <canvas id="brokerageChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-gray-500 italic">Dữ liệu thị phần trên sàn HOSE và HNX cho thấy vị thế của TCBS so với các đối thủ chính.</p>
+                </div>
+                <div class="mt-12 p-6 bg-gray-100 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Thị phần dư nợ cho vay ký quỹ (Margin) Q2/2025</h3>
+                    <p class="text-center mt-2 mb-4 text-gray-600">Dữ liệu cho thấy SSI và TCBS đang dẫn đầu về dư nợ margin, bỏ xa các đối thủ còn lại, phản ánh tiềm lực tài chính mạnh mẽ. Tổng dư nợ margin toàn thị trường đạt hơn 304 nghìn tỷ VND trong Q2/2025.</p>
+                    <div class="chart-container h-[50vh] max-h-[600px] w-full mx-auto">
+                        <canvas id="marginChart"></canvas>
+                    </div>
+                </div>
+                 <div class="mt-12 p-6 bg-gray-100 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Thị phần tư vấn phát hành TPDN 2024</h3>
+                    <p class="text-center mt-2 mb-4 text-gray-600">Biểu đồ dưới đây cho thấy thị phần tư vấn phát hành trái phiếu doanh nghiệp (TPDN) năm 2024 (không tính nhóm Ngân hàng). TCBS nổi bật với thị phần vượt trội so với các đối thủ. Tổng giá trị phát hành trong năm 2024 là 159 nghìn tỷ đồng.</p>
+                    <div class="chart-container h-[50vh] max-h-[600px] w-full mx-auto">
+                        <canvas id="bondChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <section id="wealthtech" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900">Động Cơ WealthTech</h2>
+                    <p class="mt-2 text-lg text-gray-600">Hệ sinh thái sản phẩm và công nghệ tạo nên sự khác biệt.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                    <div class="space-y-6">
+                        <div class="kpi-card">
+                            <h4 class="font-semibold text-red-700">iBond & iConnect</h4>
+                            <p class="text-sm text-gray-600">Tái định nghĩa thị trường trái phiếu bán lẻ với nền tảng giao dịch 24/7.</p>
+                        </div>
+                        <div class="kpi-card">
+                            <h4 class="font-semibold text-red-700">iTracker & iCopy</h4>
+                            <p class="text-sm text-gray-600">Dân chủ hóa đầu tư chuyên nghiệp qua các danh mục định lượng và đầu tư xã hội.</p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-48 h-48 mx-auto rounded-full bg-red-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg">TCInvest</div>
+                        <p class="mt-4 font-medium">Nền tảng "One-Stop-Shop"</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="kpi-card">
+                            <h4 class="font-semibold text-red-700">Fundmart</h4>
+                            <p class="text-sm text-gray-600">"Siêu thị" quỹ mở, tích hợp công cụ phân tích và so sánh hiệu quả.</p>
+                        </div>
+                        <div class="kpi-card">
+                            <h4 class="font-semibold text-red-700">AI & Blockchain</h4>
+                            <p class="text-sm text-gray-600">Tiên phong ứng dụng công nghệ lõi để cá nhân hóa và tăng cường bảo mật.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bổ sung bảng so sánh đặc điểm chính -->
+                <div class="mt-12 p-6 bg-white rounded-2xl shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">So sánh Đặc điểm Chính</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-300">
+                                    <th class="p-3 text-sm font-semibold text-gray-700 w-1/5">Đặc điểm</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700 w-1/5">TCBS</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700 w-1/5">SSI</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700 w-1/5">VNDIRECT</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700 w-1/5">HSC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-900 align-top">Mô hình kinh doanh trọng tâm</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Wealthtech toàn diện, số hóa đầu tư cá nhân</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Cân bằng giữa bán lẻ & tổ chức, mạnh margin & tự doanh</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Dịch vụ lấy khách hàng làm trung tâm, đầu tư công nghệ</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Môi giới & ngân hàng đầu tư, mạnh phái sinh</td>
+                                </tr>
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-900 align-top">Lợi thế công nghệ</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Nền tảng độc quyền TCInvest, 99% tài khoản online</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Nâng cấp hệ thống, SSI Iboard Pro</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Đầu tư AI & hạ tầng, D-Community</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">HSC ONE, dữ liệu thời gian thực, giao dịch đa tài sản</td>
+                                </tr>
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-900 align-top">Hỗ trợ từ công ty mẹ</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Techcombank (88.7% sở hữu), tài chính mạnh, mạng lưới khách hàng</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Không có hỗ trợ ngân hàng mẹ trực tiếp</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Không có hỗ trợ ngân hàng mẹ trực tiếp</td>
+                                </tr>
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-900 align-top">Hiệu quả hoạt động</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">CIR thấp, ROE cao, lợi nhuận/nhân viên vượt trội</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">ROE 10.1% (2023), cải thiện</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Lợi nhuận Q1/2025 giảm YoY, thách thức về thị phần</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Thiếu thông tin chi tiết so sánh</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-900 align-top">Đa dạng hóa doanh thu</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Đa dạng hóa tốt (dịch vụ chứng khoán, ngân hàng đầu tư, kho bạc)</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Phụ thuộc vào tự doanh và margin lending</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Thiếu thông tin chi tiết so sánh</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Thiếu thông tin chi tiết so sánh</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <hr class="my-12">
+        <section id="outlook" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900">Triển Vọng Đầu Tư</h2>
+                    <p class="mt-2 text-lg text-gray-600">Đánh giá cân bằng giữa cơ hội và rủi ro.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-green-50 p-6 rounded-2xl border border-green-200">
+                        <h3 class="text-xl font-semibold text-green-800 mb-4">Cơ hội chính ✅</h3>
+                        <ul class="space-y-3 text-green-900">
+                            <li class="flex items-start"><span class="font-bold mr-2">1.</span>Mô hình kinh doanh bền vững với chi phí thấp, biên lợi nhuận cao.</li>
+                            <li class="flex items-start"><span class="font-bold mr-2">2.</span>Thị trường tài chính Việt Nam còn nhiều dư địa tăng trưởng.</li>
+                            <li class="flex items-start"><span class="font-bold mr-2">3.</span>Tiềm năng từ "sóng nâng hạng" và thu hút vốn ngoại.</li>
+                            <li class="flex items-start"><span class="font-bold mr-2">4.</span>Upside từ các mảng kinh doanh mới như tài sản số.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-yellow-50 p-6 rounded-2xl border border-yellow-200">
+                        <h3 class="text-xl font-semibold text-yellow-800 mb-4">Rủi ro cần lưu ý ⚠️</h3>
+                        <ul class="space-y-3 text-yellow-900">
+                            <li class="flex items-start"><span class="font-bold mr-2">1.</span>Sự phụ thuộc vào công nghệ và rủi ro an ninh mạng.</li>
+                            <li class="flex items-start"><span class="font-bold mr-2">2.</span>Áp lực cạnh tranh gia tăng khi đối thủ đẩy mạnh số hóa.</li>
+                            <li class="flex items-start"><span class="font-bold mr-2">3.</span>Rủi ro pháp lý từ thị trường trái phiếu và các sản phẩm mới.</li>
+                            <li class="flex items-start"><span class="font-bold mr-2">4.</span>Nhà đầu tư cá nhân chưa chuyên nghiệp có thể tạo rủi ro danh tiếng.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <button id="btn-analyze" class="bg-red-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-800 transition-colors duration-300">
+                        Phân tích nhanh ✨
+                    </button>
+                    <p id="ai-insight" class="mt-4 text-sm italic text-gray-600"></p>
+                </div>
+                <div class="mt-12 p-6 bg-white rounded-2xl shadow-lg border border-gray-200">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 text-center">Đánh Giá Tài Chính cho IPO TCBS</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center whitespace-nowrap border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-300">
+                                    <th class="p-3 text-sm font-semibold text-gray-700">Chỉ số</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">TCBS (Dự phóng)</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">Trung bình Ngành</th>
+                                    <th class="p-3 text-sm font-semibold text-gray-700">Nhận định</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-900 align-top">P/E</td>
+                                    <td class="p-3 text-sm text-red-700 font-bold align-top">19.0x</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">22.6x</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Định giá hấp dẫn so với trung bình ngành.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-3 font-medium text-gray-900 align-top">P/B</td>
+                                    <td class="p-3 text-sm text-red-700 font-bold align-top">3.2x</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">~2.5x</td>
+                                    <td class="p-3 text-sm text-gray-700 align-top">Phản ánh lợi thế độc quyền và hiệu suất cao hơn.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer class="bg-gray-800 text-white text-center p-4">
-        <p class="text-sm">© 2025 Báo cáo Phân tích IPO TCBS. Dữ liệu mang tính tham khảo.</p>
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-gray-400">Báo cáo này được tạo ra cho mục đích thông tin và không phải là một khuyến nghị đầu tư.</p>
+            <p class="text-xs text-gray-500 mt-2">Dữ liệu được tổng hợp từ các báo cáo phân tích công khai và tài liệu của TCBS.</p>
+        </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script>
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
+        Chart.register(Chart.controllers.bar, Chart.controllers.line, Chart.controllers.bubble, Chart.controllers.doughnut);
+        Chart.register(ChartDataLabels);
 
-        // Add a class to the current active nav item for styling
-        const sections = document.querySelectorAll('div[id]');
-        const navLinks = document.querySelectorAll('nav a');
-
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (window.scrollY >= sectionTop - 100) {
-                    current = section.getAttribute('id');
+        let financialChart, revenueChart, profitChart, roaRoeChart, brokerageChart, marginChart, bondChart;
+            
+        // Dữ liệu cho các biểu đồ
+        const financialDataSets = {
+            growth: {
+                type: 'bar',
+                data: {
+                    labels: ['2020', '2021', '2022', '2023', '2024', 'Q1/2025'],
+                    datasets: [{
+                        label: 'Doanh thu (tỷ VND)',
+                        data: [3313, 5205, 5229, 5257, 7615, 2028],
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1,
+                        order: 2
+                    }, {
+                        label: 'Lợi nhuận trước thuế (tỷ VND)',
+                        data: [2692, 3810, 3058, 3028, 4802, 1310],
+                        backgroundColor: 'rgba(16, 185, 129, 1)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        type: 'line',
+                        tension: 0.3,
+                        order: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.formattedValue} tỷ VND`;
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString('vi-VN');
+                                    }
+                                }
+                            }
+                        }
+                    },
+                },
+                description: "TCBS ghi nhận tăng trưởng kép ấn tượng về cả doanh thu và lợi nhuận, thể hiện sự bền vững của mô hình kinh doanh."
+            },
+            mix: {
+                type: 'bar',
+                data: {
+                    labels: ['Ngân hàng ĐT', 'Môi giới', 'Cho vay ký quỹ', 'Kinh doanh vốn'],
+                    datasets: [{
+                        label: '2014 (%)',
+                        data: [77, 10, 0, 13],
+                        backgroundColor: 'rgba(96, 165, 250, 0.6)',
+                        borderColor: 'rgba(96, 165, 250, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: '2024 (%)',
+                        data: [18, 9, 34, 39],
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                   responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.formattedValue}%`;
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    },
+                description: "Cơ cấu doanh thu chuyển dịch mạnh mẽ từ Ngân hàng đầu tư sang các mảng kinh doanh bền vững hơn như Cho vay ký quỹ và Kinh doanh vốn."
+                },
+            },
+            peers: {
+                type: 'bar',
+                data: {
+                    labels: ['TCBS', 'SSI', 'VND', 'HSC'],
+                    datasets: [{
+                        label: 'ROE (%)',
+                        data: [15.2, 10.5, 6.36, 6.69],
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                    }, {
+                        label: 'ROA (%)',
+                        data: [7.6, 4.5, 3, 3.5],
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    }, {
+                        label: 'CIR (%)',
+                        data: [12.2, 28.3, 19.3, 30.7],
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.formattedValue}%`;
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    description: "TCBS vượt trội so với các đối thủ hàng đầu về mọi chỉ số hiệu quả hoạt động."
                 }
-            });
-            navLinks.forEach(link => {
-                link.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
-                if (link.href.includes(current)) {
-                    link.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+            }
+        };
+        
+        const revenueData = {
+            labels: ['SSI', 'TCBS', 'VND', 'VPS', 'VPBS', 'ACBS', 'HCM', 'MASC', 'VCI', 'MBS'],
+            datasets: [
+                {
+                    label: 'Doanh thu tự doanh',
+                    data: [1128, 716, 813, 344, 377, 475, 249, 84, 421, 236],
+                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                },
+                {
+                    label: 'Thu nhập từ cho vay',
+                    data: [628, 732, 301, 503, 262, 206, 523, 418, 257, 277],
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                },
+                {
+                    label: 'Doanh thu môi giới',
+                    data: [311, 167, 135, 579, 51, 67, 164, 105, 149, 133],
+                    backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                },
+            ]
+        };
+
+        const profitData = {
+            labels: ['TCBS', 'SSI', 'VPS', 'VND', 'VCI', 'VPBS', 'MBS', 'HCM', 'MASC', 'ACBS'],
+            datasets: [
+                {
+                    label: 'Lợi nhuận trước thuế (tỷ đồng)',
+                    data: [1310, 1047, 918, 478, 355, 351, 339, 283, 218, 182],
+                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                    order: 2,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Biên LNTT (%)',
+                    data: [64.6, 48.5, 62.5, 38, 41.7, 49.8, 50.7, 28.3, 35.4, 24.1],
+                    backgroundColor: 'rgba(59, 130, 246, 1)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    type: 'line',
+                    tension: 0.3,
+                    order: 1,
+                    yAxisID: 'y1',
+                }
+            ]
+        };
+        
+        const roaRoeData = {
+            labels: ['TCBS', 'VPS', 'SSI', 'VCI', 'MBS', 'HCM', 'VND', 'MASC', 'VPBS', 'ACBS'],
+            datasets: [{
+                label: 'ROA & ROE',
+                data: [
+                    {x: 14.5, y: 7.5, r: 25, name: 'TCBS', totalAsset: 56330},
+                    {x: 24.5, y: 8.8, r: 25, name: 'VPS', totalAsset: 36130},
+                    {x: 11.5, y: 4.5, r: 20, name: 'SSI', totalAsset: 84044},
+                    {x: 9.5, y: 4.8, r: 15, name: 'VCI', totalAsset: 23728},
+                    {x: 13.5, y: 4.2, r: 15, name: 'MBS', totalAsset: 22409},
+                    {x: 10.5, y: 3.8, r: 15, name: 'HCM', totalAsset: 30462},
+                    {x: 8.5, y: 3.5, r: 15, name: 'VND', totalAsset: 50090},
+                    {x: 7.5, y: 3.0, r: 10, name: 'MASC', totalAsset: 24353},
+                    {x: 8.8, y: 4.0, r: 10, name: 'VPBS', totalAsset: 33766},
+                    {x: 5.5, y: 3.0, r: 10, name: 'ACBS', totalAsset: 30491}
+                ],
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(249, 115, 22, 0.8)',
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(236, 72, 153, 0.8)',
+                    'rgba(234, 179, 8, 0.8)',
+                    'rgba(153, 27, 27, 0.8)',
+                    'rgba(234, 179, 8, 0.8)',
+                    'rgba(153, 27, 27, 0.8)'
+                ],
+            }]
+        };
+
+        const roaRoeChartConfig = {
+            type: 'bubble',
+            data: roaRoeData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const item = context.dataset.data[context.dataIndex];
+                                return `${item.name}: ROE ${item.x}%, ROA ${item.y}%`;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'ROE (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'ROA (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: [
+                    {
+                        id: 'text-labels',
+                        afterDraw: (chart) => {
+                            const { ctx } = chart;
+                            ctx.save();
+                            chart.data.datasets.forEach((dataset, i) => {
+                                const meta = chart.getDatasetMeta(i);
+                                meta.data.forEach((element, index) => {
+                                    const data = dataset.data[index];
+                                    const text = data.name;
+                                    ctx.fillStyle = '#FFFFFF'; 
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'middle';
+                                    ctx.font = 'bold 12px Inter';
+                                    
+                                    const radius = element.options.radius;
+                                    const textWidth = ctx.measureText(text).width;
+                                    const fontSize = parseInt(ctx.font);
+
+                                    if (textWidth < (radius * 2 - 4) && fontSize < radius * 2) {
+                                        ctx.fillText(text, element.x, element.y);
+                                    }
+                                });
+                            });
+                            ctx.restore();
+                        }
+                    }
+                ]
+            }
+        };
+        
+        const brokerageData = {
+            labels: ['VPS', 'SSI', 'TCBS', 'Vietcap', 'HSC', 'VNDirect', 'MBS', 'MAS', 'KIS', 'VCBS', 'Khác'],
+            datasets: [{
+                label: 'Thị phần',
+                data: [15.37, 10.85, 7.45, 6.84, 6.69, 6.36, 5.39, 3.50, 3.13, 2.91, 31.51],
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(249, 115, 22, 0.8)',
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(236, 72, 153, 0.8)',
+                    'rgba(234, 179, 8, 0.8)',
+                    'rgba(153, 27, 27, 0.8)',
+                    'rgba(74, 85, 104, 0.8)',
+                    'rgba(113, 128, 150, 0.8)',
+                    'rgba(203, 213, 225, 0.8)',
+                ],
+            }]
+        };
+
+        const brokerageChartConfig = {
+            type: 'doughnut',
+            data: brokerageData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Dữ liệu cho biểu đồ Margin
+        const marginData = {
+            labels: ['SSI', 'TCBS', 'VPS', 'HSC', 'VND', 'MBS'],
+            datasets: [{
+                label: 'Dư nợ Margin',
+                data: [33215, 30550, 17105, 20400, 11200, 12450],
+                backgroundColor: 'rgba(96, 165, 250, 0.8)',
+            }, {
+                label: 'Thị phần (%)',
+                data: [10.9, 10.0, 5.6, 6.7, 3.7, 4.1],
+                backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                type: 'line',
+                tension: 0.3,
+                order: 1,
+                yAxisID: 'y1'
+            }]
+        };
+
+        // Dữ liệu cho biểu đồ TPDN
+        const bondData = {
+            labels: ['TCBS', 'HDBS', 'ABS', 'MBS', 'Khác'],
+            datasets: [{
+                data: [46, 19, 5, 3, 27],
+                backgroundColor: ['#b91c1c', '#15803d', '#facc15', '#4b5563', '#d1d5db'],
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            const revenueCtx = document.getElementById('revenueMixChart').getContext('2d');
+            const profitCtx = document.getElementById('profitChart').getContext('2d');
+            const roaRoeCtx = document.getElementById('roaRoeChart').getContext('2d');
+            const brokerageCtx = document.getElementById('brokerageChart').getContext('2d');
+            const marginCtx = document.getElementById('marginChart').getContext('2d');
+            const bondCtx = document.getElementById('bondChart').getContext('2d');
+            
+            const centerTextPlugin = {
+                id: 'center-text',
+                beforeDraw: (chart) => {
+                    if (chart.canvas.id === 'bondChart') {
+                        const { ctx, chartArea } = chart;
+                        ctx.save();
+                        ctx.font = 'bold 12px Inter';
+                        ctx.fillStyle = '#b91c1c';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        const centerX = (chartArea.left + chartArea.right) / 2;
+                        const centerY = (chartArea.top + chartArea.bottom) / 2;
+                        
+                        const lines = ['Tổng giá trị', 'phát hành', '159 nghìn tỷ', 'đồng'];
+                        const lineHeight = 16;
+                        const totalHeight = lines.length * lineHeight;
+                        let y = centerY - totalHeight / 2 + lineHeight / 2;
+                        
+                        lines.forEach((line, index) => {
+                            ctx.font = `bold ${index >= 2 ? 14 : 12}px Inter`;
+                            ctx.fillText(line, centerX, y);
+                            y += lineHeight;
+                        });
+                        
+                        ctx.restore();
+                    }
+                }
+            };
+            Chart.register(centerTextPlugin);
+
+            const setupCharts = () => {
+                if (financialChart) financialChart.destroy();
+                if (revenueChart) revenueChart.destroy();
+                if (profitChart) profitChart.destroy();
+                if (roaRoeChart) roaRoeChart.destroy();
+                if (brokerageChart) brokerageChart.destroy();
+                if (marginChart) marginChart.destroy();
+                if (bondChart) bondChart.destroy();
+
+                financialChart = new Chart(ctx, {
+                    type: financialDataSets.growth.type,
+                    data: financialDataSets.growth.data,
+                    options: financialDataSets.growth.options
+                });
+                
+                revenueChart = new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: revenueData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { stacked: true },
+                            y: { stacked: true, beginAtZero: true, ticks: { callback: (value) => value.toLocaleString('vi-VN') } }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.dataset.label}: ${new Intl.NumberFormat('vi-VN').format(context.parsed.y)} tỷ VND`
+                                }
+                            },
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+                
+                profitChart = new Chart(profitCtx, {
+                    type: 'bar',
+                    data: profitData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            datalabels: {
+                                display: true,
+                                color: '#000',
+                                font: { weight: 'bold', size: 10 },
+                                formatter: (value, context) => context.datasetIndex === 1 ? `${value}%` : null,
+                                anchor: 'end',
+                                align: 'top'
+                            }
+                        },
+                        scales: {
+                            y: { type: 'linear', display: true, position: 'left', beginAtZero: true, title: { display: true, text: 'Lợi nhuận (tỷ VND)' } },
+                            y1: { type: 'linear', display: true, position: 'right', beginAtZero: true, title: { display: true, text: 'Biên lợi nhuận (%)' }, grid: { drawOnChartArea: false } }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+                
+                roaRoeChart = new Chart(roaRoeCtx, roaRoeChartConfig);
+                
+                brokerageChart = new Chart(brokerageCtx, brokerageChartConfig);
+
+                marginChart = new Chart(marginCtx, {
+                    type: 'bar',
+                    data: marginData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: {
+                                display: true,
+                                color: '#000',
+                                font: { weight: 'bold', size: 12 },
+                                formatter: (value, context) => context.datasetIndex === 1 ? `${value}%` : null,
+                                anchor: 'end',
+                                align: 'end'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: false,
+                            },
+                            y: {
+                                beginAtZero: true,
+                                stacked: false,
+                                title: {
+                                    display: true,
+                                    text: 'nghìn tỷ VND'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value / 1000 + ' nghìn tỷ VND';
+                                    }
+                                }
+                            },
+                            y1: {
+                                display: false,
+                                position: 'right',
+                                grid: { drawOnChartArea: false },
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+                
+                bondChart = new Chart(bondCtx, {
+                    type: 'doughnut',
+                    data: bondData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                display: false,
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        return `${label}: ${value}%`;
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                color: (ctx) => {
+                                    const label = ctx.chart.data.labels[ctx.dataIndex];
+                                    if (label === 'TCBS' || label === 'HDBS' || label === 'MBS') {
+                                        return '#000000'; // Màu đen
+                                    }
+                                    return '#ffffff'; // Màu trắng cho những nhãn còn lại
+                                },
+                                formatter: (value, context) => `${context.chart.data.labels[context.dataIndex]}: ${value}%`,
+                                font: {
+                                    weight: 'bold',
+                                    size: 12
+                                },
+                                anchor: 'end',
+                                align: 'end',
+                                offset: 10
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels, centerTextPlugin]
+                });
+
+                updateChart('growth');
+            };
+
+            const updateChart = (dataType) => {
+                if (financialChart) {
+                    financialChart.destroy();
+                }
+                const chartConfig = financialDataSets[dataType];
+                financialChart = new Chart(ctx, {
+                    type: chartConfig.type,
+                    data: chartConfig.data,
+                    options: chartConfig.options
+                });
+                document.getElementById('chart-description').textContent = chartConfig.description;
+
+                document.querySelectorAll('.chart-btn').forEach(btn => {
+                    btn.classList.remove('bg-red-700', 'text-white');
+                    btn.classList.add('bg-transparent', 'text-gray-600');
+                });
+                document.getElementById(`btn-${dataType}`).classList.add('bg-red-700', 'text-white');
+                document.getElementById(`btn-${dataType}`).classList.remove('bg-transparent', 'text-gray-600');
+            };
+
+            setupCharts();
+            document.getElementById('btn-growth').addEventListener('click', () => updateChart('growth'));
+            document.getElementById('btn-mix').addEventListener('click', () => updateChart('mix'));
+            document.getElementById('btn-peers').addEventListener('click', () => updateChart('peers'));
+            document.getElementById('btn-analyze').addEventListener('click', async () => {
+                const opportunities = Array.from(document.querySelectorAll('#outlook .bg-green-50 li')).map(li => li.textContent.trim());
+                const risks = Array.from(document.querySelectorAll('#outlook .bg-yellow-50 li')).map(li => li.textContent.trim());
+                
+                const prompt = `Phân tích các cơ hội và rủi ro sau đây cho một lời khuyên đầu tư ngắn gọn (tối đa 50 từ). Cơ hội: ${opportunities.join('. ')}. Rủi ro: ${risks.join('. ')}.`;
+                
+                document.getElementById('ai-insight').textContent = 'Đang phân tích...';
+
+                try {
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    
+                    const payload = {
+                        contents: [{ parts: [{ text: prompt }] }]
+                    };
+
+                    let response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        // Retry with exponential backoff
+                        let delay = 1000;
+                        for (let i = 0; i < 3; i++) {
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            if (response.ok) break;
+                            delay *= 2;
+                        }
+                        if (!response.ok) {
+                            throw new Error(`API call failed with status: ${response.status}`);
+                        }
+                    }
+
+                    const result = await response.json();
+                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Không thể tạo phân tích. Vui lòng thử lại.';
+                    document.getElementById('ai-insight').textContent = text;
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    document.getElementById('ai-insight').textContent = 'Có lỗi xảy ra khi gọi API. Vui lòng thử lại sau.';
                 }
             });
         });
